@@ -2,7 +2,7 @@
 
 ## Usage
 
-This repository allows you to run a countdown clock display for the NYC Subway from the comfort of your own apartment, home or office. You can configure it to display the times for the exact train(s)/station(s) you desire. It runs via RGB LED panels, the Raspberry Pi 2, @hzeller's great [RGB LED library](https://github.com/hzeller/rpi-rgb-led-matrix), and the MTA's real time API. Currently, the MTA currently only disseminates real-time data for the "A" division trains which include the 1, 2, 3, 4, 5, 6 and L trains, and as a result are the only lines supported. For avoidance of doubt, this repository is in no way connected, endorsed, or licensed by the Metropolitan Transportation Authority ("MTA"). 
+This repository allows you to run a countdown clock display for the NYC Subway from the comfort of your own apartment, home or office. You can configure it to display the times for the exact train(s)/station(s) you desire. It runs via RGB LED panels, the Raspberry Pi 2, @hzeller's great [RGB LED library](https://github.com/hzeller/rpi-rgb-led-matrix), and the MTA's real time API. Currently, the MTA disseminates real-time data for all lines and stops in the NYC subway system. For further information about the MTA's real time API please see their [developer site](http://web.mta.info/developers/).  For avoidance of doubt, this repository is in no way connected, endorsed, or licensed by the Metropolitan Transportation Authority ("MTA"). 
 
 **Please note that these panels do not have built-in PWM control and therefore should be run by a real-time processor. This repository utilizes the Raspberry Pi which is not a real-time processor. With that said, there should be limited issues utilizing the Pi to drive two RGB LED matrix panels. The performance issues should be limited to slight artifacts in the image including some "static" which can be seen below. You may be interested in exploring the use of level-shifters, real-time Linux kernels, or a [real-time HAT](http://www.adafruit.com/products/2345), but these are currently untested.**
 
@@ -17,7 +17,7 @@ While the cheapest option to source the hardware necessary for the project is li
 
 * [Raspberry Pi 2 - Model B](https://www.adafruit.com/products/2358)
 * [Mini USB WiFi Module](https://www.adafruit.com/products/814)
-* [4GB SD Card (Optionally Preinstalled with Raspbian Wheezy)](https://www.adafruit.com/products/1121)
+* [8GB SD CARD (Optionally Preinstalled with Stretch Lite)](https://www.adafruit.com/product/2820)
 * [5V 2A Power Supply w/ MicroUSB Cable](https://www.adafruit.com/products/1995)
 * [2 16x32 RGB LED Matrix Panels](https://www.adafruit.com/products/420)
 * [Female DC Power Adapter - 2.1mm Jack to Screw Terminal Block](https://www.adafruit.com/products/368)
@@ -26,6 +26,8 @@ While the cheapest option to source the hardware necessary for the project is li
 * USB or wireless mouse/keyboard, HDMI cable, and display (all for initial Raspberry Pi setup)
 * Mounting hardware
 * Wire Stripper/Cutter
+
+A 4GB SD Card can be used but will not be able to hold the full Raspbian install. You can instead use Raspbian Lite if using a small SD card but note that you will have to set up the GUI yourself. Everything for this project can absolutely be done from the command line though so a liteweight install is very doable.
 
 ### Software
 
@@ -50,7 +52,7 @@ In addition to a fresh install of [Raspbian](https://www.raspbian.org/), you wil
    ```
    * Safely shutdown the system with `sudo shutdown -h now` and then unplug the power. 
    * Insert the USB WiFi adapter and boot up the system. Enter the GUI via `startx` and [configure the WiFi](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-3-network-setup/setting-up-wifi-with-raspbian).
-2. With both the RGB LED matrices and Raspberry Pi disconnected from power, connect the two using the female to female wires OR solder. Either way, use following the [wiring diagram](https://github.com/hzeller/rpi-rgb-led-matrix#wiring-diagram), and make sure you are wiring to the input side of one of the RGB LED panels. To connect the two matrices together, simply use the IDC cable as pictured below.
+2. With both the RGB LED matrices and Raspberry Pi disconnected from power, connect the two using the female to female wires OR solder. Either way, use following the [wiring diagram](https://github.com/hzeller/rpi-rgb-led-matrix/blob/master/wiring.md), and make sure you are wiring to the input side of one of the RGB LED panels. Make sure that all ground connections on the RGB panels are connected to grounds on the Pi. To connect the two matrices together, simply use the IDC cable as pictured below.
 
 ![Wiring Example](http://i.imgur.com/lcoUGVK.jpg)
 
@@ -63,7 +65,97 @@ In addition to a fresh install of [Raspbian](https://www.raspbian.org/), you wil
 6. Obtain a developer key from the [MTA](http://web.mta.info/developers/developer-data-terms.html) and update the "sampleconfig.py" file with this information. Rename this file to "config.py".
 
 
-6. Navigate back to the "subwaydisplay" directory in the command prompt and run the "importdata.py" program with `python importdata.py`. You should see the RGB LED matrix panels come to life with the information for the uptown and downtown Wall Street 2/3 trains, and downtown 4/5 trains. You can adjust which trains are displayed by altering the config file with the appropriate station ids which can be found in the "StaticData" folder. 
+6. Navigate back to the "subwaydisplay" directory in the command prompt and run the "importdata.py" program with `python importdata.py`. You should see the RGB LED matrix panels come to life with the information for the uptown and downtown Wall Street 2/3 trains, and downtown 4/5 trains. You can adjust which trains are displayed by altering the config file with the appropriate station ids which can be found in the "StaticData" folder.
+
+
+Optional Steps:
+
+7. Enabling Remote Access to Your Display: I recommend enabling some form of remote access for your display so you don't need to attach a monitor to make changes or fix any connection issues which may arise. I recommend MobaXterm which I installed and linked to my Pi using the instructions found [here](https://www.raspberrypi.org/forums/viewtopic.php?t=1336910). The installation instructions can be found about halfway down that page. In brief, the instructions are as follows:
+
+   * Make sure SSH is enabled on your Pi:
+   ```
+   sudo raspi-config
+   ```
+   and press Enter. Select option #5 (Interfacing Options) and press Enter. Then select option #P2 (SSH) and press Enter. You will be asked if you want to enable the SSH server. Select "Yes" and press enter. A popup will open saying the SSH server has been enabled. Select "Ok" and you will be returned to the main menu. Select Finish and press Enter to exit raspi-config.
+   
+   * Obtain Your Pi's IP Address
+   ```
+   hostname -I
+   ```
+   Note down the IP Address and then reboot the Pi by typing
+   ```
+   sudo reboot
+   ```
+   and then press enter.
+   
+   * Once your Pi has rebooted you will no longer need to physically access it. The rest of these instructions can be done remotely from your personal computer. The next instructions will split for those managing the display from a Windows computer and those using MacOS.
+   
+   
+   *Windows*
+   
+    You will need to install an SSH client with X11 forwarding on your computer to remotely manage your Raspberry Pi. I recommend [MobaXterm](https://mobaxterm.mobatek.net/) as an excellent free client.
+    * Once you have installed MobaXterm you can connect to your Raspberry Pi:
+    ![Open MobaXterm](https://i.imgur.com/x0v9JjG.png)
+    
+    * Create a session by clicking on the "Session" icon on the toolbar.
+    ![Create a Seesion](https://i.imgur.com/XTGn0HK.png)
+    
+    * Enter the IP address of the Raspberry Pi as well as the Raspberry Pi username. Make sure that X11 Forwarding is enabled by click on the Advanced SSH Settings tab. When ready, click OK. You will be asked to enter the password.
+    ![Entering Session](https://i.imgur.com/HsRfOVJ.png)
+    
+    * Once logged in navigate to the python script for the Subway Display to remotely manage your new display!
+    ```
+    cd MTAdisplay
+    cd real-time
+    python importdata.py
+    ```
+    ![Launching Real-Time Display](https://i.imgur.com/VDO89y7.png)
+    
+    
+   *MacOS*
+   
+    You will need to install an SSH client with X11 Forwarding capabilities on the computer you wish to run the Raspberry Pi applications on. In order for the applications to appear on the computer, you also need to install Xorg Server on the computer as well. On macOS, you will need to install XQuartz since no application comes with Xorg Server integrated. Once XQuartz has been installed, you can use Terminal to connect to your Raspberry Pi. To start an SSH session with X11 forwarding, type in:
+     ```
+     ssh -Y username@raspberrypiaddress
+     ```
+     where "username" is your Raspberry Pi username and "raspberrypiadrress" is your Raspberry Pi's IP address. Then press Enter. You may be asked if you are sure if you want to connect to the host. Type in "yes". Enter the Raspberry Pi password when asked.
+     
+     ![MacOS1](https://i.imgur.com/lpvrBmg.png)
+     
+     Once you are logged in, you are ready to launch Raspberry Pi applications remotely! To launch Subway display remotely, type in:
+     ```
+    cd MTAdisplay
+    cd real-time
+    python importdata.py
+    ```
+    
+8. Keeping the Display Running When Remote Management Is Closed
+   * One of the issues with remotely managing the Raspberry Pi is that when the connection is disconnected by default the Pi interprets the action as logging out and will stop all running programs including the Subway Display. The solution is to use tmux to create parallel sessions.
+   * First install tmux:
+   ```
+   sudo apt-get install tmux
+   ```
+   * Then start tmux by typing tmux into the shell
+   ```
+   tmux
+   ```
+   * Then start the Subway Display process from inside the tmux session
+   ```
+   cd MTAdisplay
+   cd real-time
+   python importdata.py
+   ```
+   * Then detach the running tmux session with the Subway Display process running in it by typing Ctrl+B and then d
+   
+   * If you would like to check back on the running process you can access the tmux session by typing into the shell:
+   ```
+   tmux attach
+   ```
+   
+   * If you would like a list of all running tmux sessions use
+   ```
+   tmux list-sessions
+   ```
 
 
 
