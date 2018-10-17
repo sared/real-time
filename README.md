@@ -157,8 +157,84 @@ Optional Steps:
    tmux list-sessions
    ```
 
-
-
+9. Launching Display on Boot
+   * Ideally once everything is working you would want the Raspberry Pi to reboot and run the display without the hassle of SSHing in and starting the MTA display script yourself.
+   
+   * First create a launcher in the real-time directory
+   ```
+   cd
+   cd MTAdisplay/real-time
+   nano launcher.sh
+   ```
+   * Now editing the launcer in nano you will want to write the following script:
+   ```
+   #!/bin/sh
+   # launcher.sh
+   # navigate to home directory, then to this directory, then execute python script, then back home
+   
+   cd /
+   cd home/pi/MTAdisplay/real-time
+   sudo -H -u pi python importdata.py
+   cd /
+   ```
+   * Ctrl-X and save the launcher
+   
+   
+   * Now make this new launcher script an executable
+   ```
+   chmod 755 launcher.sh
+   ```
+   
+   * Give it a test by running the launcher
+   
+   ```
+   sh.launcher.sh
+   ```
+   
+   * The display should be showing the train times correctly. Break the operation with Ctrl-c before proceeding.
+   
+   
+   * Now we add a logs directory to the home directory to keep track of any errors. Navigate back to the home directory with
+   ```
+   cd
+   ```
+   
+   * And then create the logs directory
+   
+   ```
+   mkdir logs
+   ```
+   
+   
+   * We are going to make the display script trigger at startup using crontab, a background process which lets you execute scripts at specific times. It is confusing but we won't need to do much with it to get it to work!
+   * In the home directory enter:
+   
+   ```
+   sudo crontab -e
+   ```
+   
+   * This will bring up crontab. You may be prompted to select the editor you would like to use. Choose nano, which in my case was helpfully marked as the "easiest" option in the terminal.
+   
+   * Once in crontab there will be a bunch of commented lines roughly introducing the syntax of the system. Below that enter the following line:
+   
+   ```
+   @reboot sh /home/pi/MTAdisplay/real-time/launcher.sh >/home/pi/logs/cronlog 2>&1
+   ```
+   
+   * This will execute the launcher at startup and record any errors in the logs directory we made earlier. Now see if it works!
+   
+   ```
+   sudo reboot
+   ```
+   
+   
+   * If there are any issues check the log file:
+   ```
+   cd logs
+   cat cronlog
+   ```
+   
+   
 ## Contributing
 
 1. Fork it!
@@ -171,7 +247,7 @@ Optional Steps:
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Christopher Griffin
+Copyright (c) 2018 Stephen Redden
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
