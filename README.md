@@ -60,7 +60,7 @@ In addition to a fresh install of [Raspbian](https://www.raspbian.org/), you wil
 
 4. With the matrices correctly wired to the Pi and connected to power, boot the Pi back on. Login using your new credentials, and navigate to the GUI via `startx`. Make sure you are connected to the internet, and open up the command prompt. Create a directory named "subwaydisplay" via `mkdir subwaydisplay` and navigate to the directory via `cd subwaydisplay`. Clone this repository into the folder via `git clone https://github.com/sared/real-time.git`. If you run into an error, make sure that you have git installed via `sudo apt-get install git`. Navigate to the "rpi-rgb-led-matrix" directory via `cd rpi-rgb-led-matrix` and clone @hzeller's [RGB LED library](https://github.com/hzeller/rpi-rgb-led-matrix) via `git clone https://github.com/hzeller/rpi-rgb-led-matrix.git`. Run the `make` command to compile the files of this repository. 
 
-5. Install [PIL](http://www.pythonware.com/products/pil/) and [python gtfs-realtime-bindings](https://developers.google.com/transit/gtfs-realtime/code-samples?hl=en#python) via instructions from the provided links. 
+5. Install [PIL](http://www.pythonware.com/products/pil/) and [python gtfs-realtime-bindings](https://developers.google.com/transit/gtfs-realtime/examples/python-sample?hl=en) via instructions from the provided links. 
 
 6. Obtain a developer key from the [MTA](http://web.mta.info/developers/developer-data-terms.html) and update the "sampleconfig.py" file with this information. Rename this file to "config.py".
 
